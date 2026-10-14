@@ -1,0 +1,59 @@
+# Описание проекта для XcodeGen (https://github.com/yonaskolb/XcodeGen).
+# Сгенерировать PtmobStats.xcodeproj:  xcodegen generate
+name: PtmobStats
+options:
+  bundleIdPrefix: ru.ptmob
+  deploymentTarget:
+    macOS: "14.0"
+  createIntermediateGroups: true
+
+settings:
+  base:
+    SWIFT_VERSION: "5.0"
+    MARKETING_VERSION: "1.0"
+    CURRENT_PROJECT_VERSION: "1"
+    CODE_SIGN_STYLE: Automatic
+    # Укажите свой Team ID (или выберите команду в Xcode → Signing & Capabilities)
+    DEVELOPMENT_TEAM: ""
+
+targets:
+  PtmobStats:
+    type: application
+    platform: macOS
+    sources: [App, Shared]
+    info:
+      path: App/Info.plist
+      properties:
+        CFBundleDisplayName: Посещаемость ptmob.ru
+        LSApplicationCategoryType: public.app-category.utilities
+    entitlements:
+      path: App/App.entitlements
+      properties:
+        com.apple.security.app-sandbox: true
+        com.apple.security.network.client: true
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: ru.ptmob.stats
+    dependencies:
+      - target: PtmobWidget
+        embed: true
+    scheme: {}
+
+  PtmobWidget:
+    type: app-extension
+    platform: macOS
+    sources: [Widget, Shared]
+    info:
+      path: Widget/Info.plist
+      properties:
+        CFBundleDisplayName: ptmob.ru
+        NSExtension:
+          NSExtensionPointIdentifier: com.apple.widgetkit-extension
+    entitlements:
+      path: Widget/Widget.entitlements
+      properties:
+        com.apple.security.app-sandbox: true
+        com.apple.security.network.client: true
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: ru.ptmob.stats.widget

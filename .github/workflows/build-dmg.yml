@@ -1,0 +1,38 @@
+# Собирает установочный PtmobStats.dmg на Mac-машине GitHub (Apple Silicon).
+# Готовый файл: вкладка Actions → последний запуск → Artifacts → PtmobStats-dmg.
+# При пуше тега v* (например v1.0) DMG также прикрепляется к GitHub Release.
+name: Build DMG
+
+on:
+  push:
+    branches: [main]
+    tags: ["v*"]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: macos-15
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install XcodeGen
+        run: brew install xcodegen
+
+      - name: Build and package
+        run: |
+          chmod +x make_dmg.sh
+          ./make_dmg.sh
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: PtmobStats-dmg
+          path: dist/PtmobStats.dmg
+
+      - name: Attach to release
+        if: startsWith(github.ref, 'refs/tags/v')
+        uses: softprops/action-gh-release@v2
+        with:
+          files: dist/PtmobStats.dmg
